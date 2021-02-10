@@ -1,7 +1,6 @@
 on:
   push:
-    branches:
-      - $default-branch
+    branches: [master, main]
 
 jobs:
   build:
@@ -9,3 +8,5 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Hello World
+        run: echo "hello world"
