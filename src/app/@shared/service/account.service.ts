@@ -16,7 +16,7 @@ export class AccountService {
   constructor(private httpClient: HttpClient) {}
 
   login(socialUser: SocialUser): Observable<Credential> {
-    return this.httpClient.post(`${this.baseUrl}/v1/login`, socialUser, { withCredentials: true }).pipe(
+    return this.httpClient.post(`${this.baseUrl}/api/v1/login`, socialUser, { withCredentials: true }).pipe(
       map((body: Credential) => {
         return body;
       })
@@ -24,7 +24,7 @@ export class AccountService {
   }
 
   deleteLogin(provider: string): Observable<Credential> {
-    return this.httpClient.delete(`${this.baseUrl}/v1/login?provider=${provider}`, { withCredentials: true }).pipe(
+    return this.httpClient.delete(`${this.baseUrl}/api/v1/login?provider=${provider}`, { withCredentials: true }).pipe(
       map((body: Credential) => {
         return body;
       })
@@ -43,7 +43,7 @@ export class AccountService {
   }
 
   getLogins(): Observable<{ [key: string]: Payload }> {
-    return this.httpClient.get(`${this.baseUrl}/v1/login`).pipe(
+    return this.httpClient.get(`${this.baseUrl}/api/v1/login`).pipe(
       map((body: { [key: string]: Payload }) => {
         return body;
       })
@@ -51,7 +51,7 @@ export class AccountService {
   }
 
   createAccount(account: { email: string; name: string; company?: string }): Observable<Account> {
-    return this.httpClient.post(`${this.baseUrl}/v1`, account).pipe(
+    return this.httpClient.post(`${this.baseUrl}/api/v1`, account).pipe(
       map((body: Account) => {
         return body;
       })
@@ -59,7 +59,7 @@ export class AccountService {
   }
 
   updateAccount(account: { name?: string; company?: string }): Observable<Account> {
-    return this.httpClient.patch(`${this.baseUrl}/v1`, account).pipe(
+    return this.httpClient.patch(`${this.baseUrl}/api/v1`, account).pipe(
       map((body: Account) => {
         return body;
       })
@@ -67,7 +67,7 @@ export class AccountService {
   }
 
   getAccount(): Observable<Account> {
-    return this.httpClient.get(`${this.baseUrl}/v1`).pipe(
+    return this.httpClient.get(`${this.baseUrl}/api/v1`).pipe(
       map((body: Account) => {
         return body;
       })
