@@ -1,5 +1,11 @@
 @import "src/theme/theme-variables";
 
+.profile-photo {
+  border-radius: 50%;
+  height: 1.5em;
+  width: 1.5em;
+}
+
 .navbar {
   margin-bottom: $spacer;
 }

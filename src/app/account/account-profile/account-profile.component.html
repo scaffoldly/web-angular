@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h4>Profile</h4>
+      <hr />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-8">
+      <app-profile-form mode="update" (onUpdate)="onUpdate($event)"></app-profile-form>
+    </div>
+    <div class="col-4 d-flex flex-column flex-fill">
+      <h6>Profile picture</h6>
+      <img *ngIf="photoUrl" class="profile-photo" [src]="photoUrl" />
+      <i *ngIf="!photoUrl" class="fas fa-user-circle"></i>
+    </div>
+  </div>
+</div>

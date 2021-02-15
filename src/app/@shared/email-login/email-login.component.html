@@ -1,0 +1,18 @@
+<div class="m-2">
+  <div class="form-group">
+    <label class="d-block">
+      <input type="text" class="form-control" autocomplete="email" [placeholder]="'Email' | translate" />
+      <span hidden translate>Email</span>
+      <small
+        [hidden]="loginForm.controls.email.valid || loginForm.controls.email.untouched"
+        class="text-danger"
+        translate
+      >
+        Email is required
+      </small>
+    </label>
+  </div>
+  <button class="btn btn-primary w-100" type="submit" [disabled]="loginForm.invalid">
+    <span translate><i class="far fa-envelope mr-2"></i>Continue with Email</span>
+  </button>
+</div>

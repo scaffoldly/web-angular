@@ -1,0 +1,29 @@
+<div class="login-container bg-light">
+  <div class="login-box">
+    <h1 translate>APP_NAME</h1>
+    <div>
+      <h6 class="d-inline-block">v{{ version }}</h6>
+      <div class="d-inline-block ml-3">
+        <app-language-selector></app-language-selector>
+      </div>
+    </div>
+    <div class="container">
+      <div class="card col-lg-6 col-md-8 col-sm-10 mx-auto mt-3">
+        <div class="card-body">
+          <app-loader [loading]="loading"></app-loader>
+          <div class="alert alert-danger" [hidden]="!error" translate>{{ error }}</div>
+          <app-google-login (clicked)="googleLogin()"></app-google-login>
+          <app-apple-login></app-apple-login>
+          <hr class="mt-4 mb-4" />
+          <app-email-login></app-email-login>
+        </div>
+        <div class="disclaimer p-2 pb-3">
+          <span translate
+            >By clicking "Continue with Google/Apple/Email" above, you acknowledge that you have read and understood,
+            and agree to our Terms and Conditions and Privacy Policy. ## TODO LINKS ##
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

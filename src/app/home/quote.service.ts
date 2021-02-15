@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { AccountService } from '@app/@shared/service/account.service';
 
 const routes = {
   quote: (c: RandomQuoteContext) => `/jokes/random?category=${c.category}`,
@@ -16,11 +17,11 @@ export interface RandomQuoteContext {
   providedIn: 'root',
 })
 export class QuoteService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private accountService: AccountService) {}
 
   getRandomQuote(context: RandomQuoteContext): Observable<string> {
-    return this.httpClient.get(routes.quote(context)).pipe(
-      map((body: any) => body.value),
+    return this.accountService.getSocialLogins().pipe(
+      map((body: any) => JSON.stringify(body)),
       catchError(() => of('Error, could not load joke :-('))
     );
   }

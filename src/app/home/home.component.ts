@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Logger } from '@app/@core';
+import { Account } from '@app/@shared/interfaces/account';
+import { AccountService } from '@app/@shared/service/account.service';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-import { QuoteService } from './quote.service';
+const log = new Logger('Home');
 
 @Component({
   selector: 'app-home',
@@ -9,22 +14,20 @@ import { QuoteService } from './quote.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  quote: string | undefined;
-  isLoading = false;
+  account: Account;
+  loading = true;
 
-  constructor(private quoteService: QuoteService) {}
+  constructor(private router: Router, private accountService: AccountService) {}
 
   ngOnInit() {
-    this.isLoading = true;
-    this.quoteService
-      .getRandomQuote({ category: 'dev' })
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe((quote: string) => {
-        this.quote = quote;
-      });
+    this.accountService.getAccount().subscribe((account: Account | null) => {
+      if (!account) {
+        log.info('No account, redirecting to signup...');
+        this.router.navigate(['/signup']);
+        return;
+      }
+      this.loading = false;
+      this.account = account;
+    });
   }
 }

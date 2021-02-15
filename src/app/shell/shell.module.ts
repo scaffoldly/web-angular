@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { I18nModule } from '@app/i18n';
-import { AuthModule } from '@app/auth';
+import { AuthModule } from '@app/@shared/auth';
 import { ShellComponent } from './shell.component';
 import { HeaderComponent } from './header/header.component';
 

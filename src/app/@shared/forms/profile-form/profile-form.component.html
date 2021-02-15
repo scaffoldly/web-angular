@@ -1,0 +1,79 @@
+<div class="container">
+  <form #form="ngForm" [formGroup]="formGroup" (ngSubmit)="this.submit()">
+    <h5 *ngIf="this.title" translate>{{ this.title }}</h5>
+    <div>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          formControlName="email"
+          aria-describedby="emailHelp"
+          placeholder="jean.luc@enterprise.com"
+          readonly
+        />
+        <div
+          *ngIf="formGroup.get('email').invalid && (formGroup.get('email').dirty || formGroup.get('email').touched)"
+          class="mt-1"
+        >
+          <span *ngIf="formGroup.get('email').errors.required" class="badge badge-pill badge-danger" translate
+            >Email is required.</span
+          >
+          <span *ngIf="formGroup.get('email').invalid" class="badge badge-pill badge-danger" translate
+            >Invalid email address.</span
+          >
+        </div>
+        <small id="emailHelp" class="form-text text-muted" translate
+          >We'll never share your email with anyone else.
+          <a href="TODO Pricacy Policy" class="text-dark">Privacy Policy</a></small
+        >
+      </div>
+      <div class="form-group">
+        <label for="name" translate>Name</label>
+        <input type="text" class="form-control" id="name" formControlName="name" placeholder="Jean-Luc Picard" />
+        <div
+          *ngIf="formGroup.get('name').invalid && (formGroup.get('name').dirty || formGroup.get('name').touched)"
+          class="mt-1"
+        >
+          <span *ngIf="formGroup.get('name').errors.required" class="badge badge-pill badge-danger" translate
+            >Name is required.</span
+          >
+          <span *ngIf="formGroup.get('name').errors.minlength" class="badge badge-pill badge-danger" translate
+            >Name must be at least 3 characters long.</span
+          >
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="company" translate>Company</label>
+        <input
+          type="text"
+          class="form-control"
+          id="company"
+          formControlName="company"
+          aria-describedby="companyHelp"
+          [placeholder]="this.mode === 'create' ? 'United Federation of Planets, Inc.' : ''"
+        />
+        <div
+          *ngIf="
+            formGroup.get('company').invalid && (formGroup.get('company').dirty || formGroup.get('company').touched)
+          "
+          class="mt-1"
+        >
+          <span *ngIf="formGroup.get('company').errors.minlength" class="badge badge-pill badge-danger"
+            >Company must be at least 3 characters long.</span
+          >
+        </div>
+        <small id="companyHelp" class="form-text text-muted" translate>Optional</small>
+      </div>
+      <div class="d-flex justify-content-end">
+        <app-button
+          #submitButton
+          [form]="this.form"
+          [disabled]="this.mode === 'create' ? !this.formGroup.valid : !this.formGroup.valid || this.formGroup.pristine"
+          [text]="this.mode === 'create' ? 'Save Profile' : 'Update Profile'"
+        ></app-button>
+      </div>
+    </div>
+  </form>
+</div>

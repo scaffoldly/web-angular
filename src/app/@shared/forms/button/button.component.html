@@ -1,0 +1,11 @@
+<button
+  #buttonViewChild
+  class="btn d-flex justify-content-center align-items-center"
+  style="display: none"
+  [disabled]="this.disabled"
+  (click)="this.click()"
+>
+  <div #textViewChild style="display: inline">{{ this.text }}</div>
+  <div #spinnerViewChild class="spinner-border" role="status" style="display: none"></div>
+  <i #checkViewChild class="fas" style="display: none"></i>
+</button>

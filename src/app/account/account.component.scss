@@ -1,0 +1,16 @@
+@import "src/theme/theme-variables";
+@import "~bootstrap/scss/mixins/_breakpoints";
+
+.profile-photo {
+  border-radius: 50%;
+  height: 4em;
+  width: 4em;
+}
+
+.name {
+  font-size: x-large;
+}
+
+.email {
+  color: theme-color("secondary");
+}

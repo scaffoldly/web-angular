@@ -13,10 +13,10 @@ import { env } from './.env';
 export const environment = {
   production: false,
   hmr: true,
-  version: env.npm_package_version + '-dev',
-  serverUrl: '/api',
+  version: env.npm_package_version + '-local',
   defaultLanguage: 'en-US',
-  supportedLanguages: ['en-US', 'fr-FR'],
+  supportedLanguages: ['en-US'],
+  serviceUrls: env.service_urls,
 };
 
 /*

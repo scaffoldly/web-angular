@@ -4,9 +4,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreModule } from '@core';
-import { AuthenticationService, CredentialsService } from '@app/auth';
-import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
-import { MockCredentialsService } from '@app/auth/credentials.service.mock';
+import { AuthenticationService, CredentialsService } from '@app/@shared/auth';
+import { MockAuthenticationService } from '@app/@shared/auth/authentication.service.mock';
+import { MockCredentialsService } from '@app/@shared/auth/credentials.service.mock';
 
 import { I18nModule } from '@app/i18n';
 import { ShellComponent } from './shell.component';
