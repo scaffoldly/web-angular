@@ -1,0 +1,38 @@
+name: Live Deploy
+on:
+  release:
+    types: [created]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  AWS_PARTITION: ${{ secrets.LIVE_AWS_PARTITION }}
+  AWS_ACCOUNT_ID: ${{ secrets.LIVE_AWS_ACCOUNT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.LIVE_AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.LIVE_AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.LIVE_AWS_DEFAULT_REGION }}
+  BUCKET_NAME: ${{ secrets.LIVE_AWS_BUCKET_NAME }}
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.LIVE_AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+  NODE_ENV: live
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.event.head_commit.message, 'Initial commit') && !startsWith(github.event.head_commit.message, '[Scaffoldly]')"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn
+      - run: yarn build
+      - uses: 'scaffoldly/github-action-bump-version-npm@master'
+        with:
+          tag-prefix: ''
+      - run: aws s3 sync . "s3://$BUCKET_NAME"
+        working-directory: dist
+      - run: aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"

@@ -150,10 +150,10 @@
     ora "5.0.0"
     rxjs "6.6.2"
 
-"@angular/animations@^11.1.2":
-  version "11.1.2"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-11.1.2.tgz#df5d5284625e17a4b094a6cf8c420d3c5f187693"
-  integrity sha512-n3mn5Fll4HxMb4aLN8oRrk7lQiToSNA7nI59Q+O4XPwA4Z8Mjtm2NZe2U/IvYrprh0y/6KdOI5u/+yyF5sKlsQ==
+"@angular/animations@^10.1.4":
+  version "10.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-10.2.4.tgz#6c222aa1f4efd078f4c7388235ef5b9144bf80a4"
+  integrity sha512-ovlfHxY1C6yH6SdfWIG1WqB77GHfuJ4i3jItvf0qFSvbOHG8OOzrSOR6EVRJYTnre4r4pQ3V8cDFy3igBlWXUw==
   dependencies:
     tslib "^2.0.0"
 
@@ -1487,6 +1487,17 @@
   dependencies:
     chalk "^2.0.1"
 
+"@ngx-rocket/scripts@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@ngx-rocket/scripts/-/scripts-5.1.0.tgz#dd0bf263c8d8bd95573f70edc17cce522a4fa93a"
+  integrity sha512-HKX+zfMCXRH9eZULH5UveMRC4gNodWv/84mTbUz/95CJluWs9kqCfh139ujlkJnv3pYwBx7nrkSD9M5Lvm1Neg==
+  dependencies:
+    "@ngx-rocket/ascii-logo" "^1.1.0"
+    chalk "^4.1.0"
+    fs-extra "^9.0.1"
+    lodash.get "^4.4.2"
+    minimist "^1.2.5"
+
 "@ngx-translate/core@^13.0.0":
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/@ngx-translate/core/-/core-13.0.0.tgz#60547cb8a0845a2a0abfde6b0bf5ec6516a63fd6"
@@ -1528,17 +1539,6 @@
   integrity sha512-jjMmK1tnZbm1Jq5a7fBliM4gQwjxMU7TFoRNwIyzwlO+eHPRCFv/Nv+H/Gi1jc3WR7QURG8D5d0Tn12YGrUqBQ==
   dependencies:
     esquery "^1.0.1"
-
-"@scaffoldly/ngx-scripts@^5.0.4":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@scaffoldly/ngx-scripts/-/ngx-scripts-5.0.4.tgz#1acdfcf7a70ac3df33755379825d1f4201b84576"
-  integrity sha512-Ldc6Ek7KTPn0DxA5ltPwuetoRfztUOnDNHQF/3oVC1MMuotIulEzAqj62Mu4Hv/X5oYyRjQldTTFRPQPsLIkQg==
-  dependencies:
-    "@ngx-rocket/ascii-logo" "^1.1.0"
-    chalk "^4.1.0"
-    fs-extra "^9.0.1"
-    lodash.get "^4.4.2"
-    minimist "^1.2.5"
 
 "@schematics/angular@10.1.7":
   version "10.1.7"
@@ -6981,6 +6981,11 @@ jest@^26.4.2:
     "@jest/core" "^26.6.3"
     import-local "^3.0.2"
     jest-cli "^26.6.3"
+
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
 
 js-stringify@^1.0.1:
   version "1.0.2"

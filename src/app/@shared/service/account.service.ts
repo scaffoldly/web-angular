@@ -11,7 +11,7 @@ import { Account } from '../interfaces/account';
   providedIn: 'root',
 })
 export class AccountService {
-  baseUrl = environment.serviceUrls['account-sls-rest-api'];
+  baseUrl = environment.serviceUrls['sly-auth-api'];
 
   constructor(private httpClient: HttpClient) {}
 
