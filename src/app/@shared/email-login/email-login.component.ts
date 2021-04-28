@@ -1,5 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Providers } from '../interfaces/providers';
+import { AuthenticationService } from '../service/authentication.service';
+
+export type Email = string;
 
 @Component({
   selector: 'app-email-login',
@@ -7,23 +11,23 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./email-login.component.scss'],
 })
 export class EmailLoginComponent implements OnInit {
-  loginForm!: FormGroup;
-  @Output() clicked: EventEmitter<Event> = new EventEmitter();
+  @Output() clicked: EventEmitter<Email> = new EventEmitter();
 
-  constructor(private formBuilder: FormBuilder) {
-    this.createForm();
+  email = new FormControl('', [Validators.required, Validators.email]);
+
+  enabled = false;
+
+  @Input() set providers(providers: Providers) {
+    if (providers && providers['EMAIL']) {
+      this.enabled = true;
+    }
   }
+
+  constructor() {}
 
   ngOnInit(): void {}
 
-  onClick(event: Event) {
-    this.clicked.emit(event);
-  }
-
-  private createForm() {
-    this.loginForm = this.formBuilder.group({
-      email: ['', Validators.required],
-      remember: true,
-    });
+  onClick(email: Email) {
+    this.clicked.emit(email);
   }
 }

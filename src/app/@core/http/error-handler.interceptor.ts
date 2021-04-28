@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
@@ -35,27 +35,22 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     next: HttpHandler,
     response: HttpEvent<any>
   ): Observable<HttpEvent<any>> {
-    if (!environment.production) {
-      // Do something with the error
-      log.error('Request error', response);
-    }
-
     if (!(response instanceof HttpErrorResponse)) {
-      return this.toastThrowError(new CoreError('Request error', response));
+      return this.toastThrowError(response, new CoreError('Request error', response));
     }
 
     const errorResponse = response as HttpErrorResponse;
     const { status } = errorResponse;
 
     if (status !== 401) {
-      return this.toastThrowError(new CoreError('Request error', response));
+      return this.toastThrowError(response, new CoreError('Request error', response));
     }
 
     return this.authenticationService.refresh().pipe(
-      mergeMap((credential) => {
+      mergeMap((loginResponse) => {
         return this.intercept(
           request.clone({
-            headers: request.headers.set('Authorization', `Bearer ${credential.token}`),
+            headers: request.headers.set('Authorization', `Bearer ${loginResponse.token}`),
           }),
           next
         );
@@ -63,14 +58,16 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
       catchError((error) => {
         return this.authenticationService.logout().pipe(() => {
           this.router.navigate(['/login'], { replaceUrl: true });
-          return this.toastThrowError(new CoreError('Token refresh error', error));
+          return this.toastThrowError(response, new CoreError('Token refresh error', error));
         });
       })
     );
   }
 
-  private toastThrowError(error: CoreError): Observable<never> {
-    this.toastrService.error(error.message, error.name);
+  private toastThrowError(response: HttpEvent<any>, error: CoreError): Observable<HttpEvent<any>> {
+    if (error.code !== 404) {
+      this.toastrService.error(error.message, error.name);
+    }
     return throwError(error);
   }
 }

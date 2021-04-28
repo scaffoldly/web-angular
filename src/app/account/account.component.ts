@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CredentialsService } from '@app/@shared/service/credentials.service';
+import { Account } from '@app/@shared/interfaces/account';
+import { AccountService } from '@app/@shared/service/account.service';
+import { AuthenticationService } from '@app/@shared/service/authentication.service';
 
 @Component({
   selector: 'app-account',
@@ -8,6 +10,9 @@ import { CredentialsService } from '@app/@shared/service/credentials.service';
   styleUrls: ['./account.component.scss'],
 })
 export class AccountComponent implements OnInit {
+  id: string;
+  name: string;
+  company: string;
   activeFragment = 'profile';
   pages = {
     profile: {
@@ -18,27 +23,29 @@ export class AccountComponent implements OnInit {
     },
   };
 
-  constructor(private route: ActivatedRoute, private credentialsService: CredentialsService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private authenticationService: AuthenticationService,
+    private accountService: AccountService
+  ) {}
 
   ngOnInit() {
     this.route.fragment.subscribe((fragment: string) => {
       this.activeFragment = Object.keys(this.pages).find((p) => p === fragment) || Object.keys(this.pages)[0];
     });
-  }
 
-  get name(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.name : null;
-  }
-
-  get email(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.email : null;
+    this.accountService.getCurrentAccount().subscribe((account: Account) => {
+      if (account) {
+        this.id = account.id;
+        this.name = account.detail.name;
+        this.company = account.detail.company;
+      }
+    });
   }
 
   get photoUrl(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.photoUrl : null;
+    const { payload } = this.authenticationService;
+    return payload ? payload.photoUrl : null;
   }
 
   get pageKeys(): string[] {

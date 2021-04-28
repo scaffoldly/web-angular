@@ -1,8 +1,17 @@
+export interface AccountDetail {
+  email: string;
+  name: string;
+  company?: string;
+}
+
 export interface Account {
   id: string;
   sk: string;
-  name: string;
-  email: string;
-  company?: string;
-  updates?: boolean;
+  detail: AccountDetail;
+}
+
+export type Providers = { [provider: string]: Provider };
+
+export interface Provider {
+  clientId: string;
 }

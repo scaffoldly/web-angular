@@ -1,76 +1,74 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { SocialUser } from 'angularx-social-login';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Credential, Payload } from '../interfaces/credential';
+import {
+  AsyncSubject,
+  BehaviorSubject,
+  CompletionObserver,
+  ErrorObserver,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+} from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Account } from '../interfaces/account';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
+  private currentAccount$: BehaviorSubject<Account> = new BehaviorSubject(null);
+
   baseUrl = environment.serviceUrls['sly-auth-api'];
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private authenticationService: AuthenticationService) {
+    this.authenticationService.loginResponse$.subscribe((loginResponse) => {
+      if (!loginResponse || !loginResponse.token || !loginResponse.verified) {
+        this.setAccount(null);
+        return;
+      }
 
-  login(socialUser: SocialUser): Observable<Credential> {
-    return this.httpClient.post(`${this.baseUrl}/api/v1/login`, socialUser, { withCredentials: true }).pipe(
-      map((body: Credential) => {
-        return body;
-      })
-    );
+      this.getAccount(loginResponse.id).subscribe(
+        (account) => {},
+        (error) => {}
+      );
+    });
   }
 
-  deleteLogin(provider: string): Observable<Credential> {
-    return this.httpClient.delete(`${this.baseUrl}/api/v1/login?provider=${provider}`, { withCredentials: true }).pipe(
-      map((body: Credential) => {
-        return body;
-      })
-    );
+  private setAccount(account: Account) {
+    if (account && account.id === this.authenticationService.id) {
+      this.currentAccount$.next(account);
+    }
+    return account;
   }
 
-  refresh(credential: Credential): Observable<Credential> {
-    const { payload } = credential;
-    const { refreshUrl } = payload;
-
-    return this.httpClient.post(refreshUrl, {}, { withCredentials: true }).pipe(
-      map((body: Credential) => {
-        return body;
+  createAccount = (account: { email: string; name: string; company?: string }): Observable<Account> => {
+    return this.httpClient.post(`${this.baseUrl}/api/v1/account`, account).pipe(
+      map((account: Account) => {
+        return this.setAccount(account);
       })
     );
-  }
+  };
 
-  getLogins(): Observable<{ [key: string]: Payload }> {
-    return this.httpClient.get(`${this.baseUrl}/api/v1/login`).pipe(
-      map((body: { [key: string]: Payload }) => {
-        return body;
+  updateAccount = (id: string, account: { name?: string; company?: string }): Observable<Account> => {
+    return this.httpClient.patch(`${this.baseUrl}/api/v1/account/${id}`, account).pipe(
+      map((account: Account) => {
+        return this.setAccount(account);
       })
     );
-  }
+  };
 
-  createAccount(account: { email: string; name: string; company?: string }): Observable<Account> {
-    return this.httpClient.post(`${this.baseUrl}/api/v1`, account).pipe(
-      map((body: Account) => {
-        return body;
+  getAccount = (id: string): Observable<Account> => {
+    return this.httpClient.get(`${this.baseUrl}/api/v1/account/${id}`).pipe(
+      map((account: Account) => {
+        return this.setAccount(account);
       })
     );
-  }
+  };
 
-  updateAccount(account: { name?: string; company?: string }): Observable<Account> {
-    return this.httpClient.patch(`${this.baseUrl}/api/v1`, account).pipe(
-      map((body: Account) => {
-        return body;
-      })
-    );
-  }
-
-  getAccount(): Observable<Account> {
-    return this.httpClient.get(`${this.baseUrl}/api/v1`).pipe(
-      map((body: Account) => {
-        return body;
-      })
-    );
-  }
+  getCurrentAccount = (): Observable<Account> => {
+    return this.currentAccount$.asObservable();
+  };
 }

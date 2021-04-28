@@ -3,10 +3,10 @@
     <div class="col-12">
       <div class="d-flex justify-content-start">
         <img *ngIf="photoUrl" class="profile-photo" [src]="photoUrl" />
-        <i *ngIf="!photoUrl" class="fas fa-user-circle"></i>
+        <i *ngIf="!photoUrl" class="fas fa-user-circle profile-icon"></i>
         <div class="d-flex flex-column ml-3">
           <span class="name">{{ name }}</span>
-          <span class="email">{{ email }}</span>
+          <span class="email">{{ id }}</span>
         </div>
       </div>
     </div>

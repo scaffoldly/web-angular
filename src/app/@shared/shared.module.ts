@@ -7,19 +7,28 @@ import { GoogleLoginComponent } from './google-login/google-login.component';
 import { EmailLoginComponent } from './email-login/email-login.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProfileFormComponent } from './forms/profile-form/profile-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from './forms/button/button.component';
+import { VerificationCodeComponent } from './verification-code/verification-code.component';
 
 @NgModule({
-  imports: [CommonModule, TranslateModule, ReactiveFormsModule],
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule, FormsModule],
   declarations: [
     LoaderComponent,
     GoogleLoginComponent,
     AppleLoginComponent,
     EmailLoginComponent,
     ProfileFormComponent,
+    VerificationCodeComponent,
     ButtonComponent,
   ],
-  exports: [LoaderComponent, GoogleLoginComponent, AppleLoginComponent, EmailLoginComponent, ProfileFormComponent],
+  exports: [
+    LoaderComponent,
+    GoogleLoginComponent,
+    AppleLoginComponent,
+    EmailLoginComponent,
+    VerificationCodeComponent,
+    ProfileFormComponent,
+  ],
 })
 export class SharedModule {}

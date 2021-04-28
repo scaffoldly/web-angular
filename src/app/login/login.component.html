@@ -9,18 +9,31 @@
     </div>
     <div class="container">
       <div class="card col-lg-6 col-md-8 col-sm-10 mx-auto mt-3">
-        <div class="card-body">
+        <div *ngIf="!this.verificationMethod" class="card-body">
           <app-loader [loading]="loading"></app-loader>
           <div class="alert alert-danger" [hidden]="!error" translate>{{ error }}</div>
-          <app-google-login (clicked)="googleLogin()"></app-google-login>
-          <app-apple-login></app-apple-login>
-          <hr class="mt-4 mb-4" />
-          <app-email-login></app-email-login>
+          <app-google-login class="m-2" [providers]="this.providers" (clicked)="googleLogin()"></app-google-login>
+          <app-apple-login class="m-2" [providers]="this.providers"></app-apple-login>
+          <app-email-login class="m-2" [providers]="this.providers" (clicked)="emailLogin($event)"></app-email-login>
+        </div>
+        <div *ngIf="this.verificationMethod" class="card-body">
+          <app-loader [loading]="loading"></app-loader>
+          <div class="alert alert-danger" [hidden]="!error" translate>{{ error }}</div>
+          <app-verification-code
+            class="m-2"
+            [verificationMethod]="verificationMethod"
+            (clicked)="verifyCode($event)"
+          ></app-verification-code>
+          <div>
+            <button type="button" class="btn btn-outline-secondary w-100" (click)="reset()">
+              <i class="fas fa-arrow-left mr-2"></i>Go Back
+            </button>
+          </div>
         </div>
         <div class="disclaimer p-2 pb-3">
           <span translate
-            >By clicking "Continue with Google/Apple/Email" above, you acknowledge that you have read and understood,
-            and agree to our Terms and Conditions and Privacy Policy. ## TODO LINKS ##
+            >By logging in, you acknowledge that you have read and understood, and agree to our Terms and Conditions and
+            Privacy Policy. ## TODO LINKS ##
           </span>
         </div>
       </div>

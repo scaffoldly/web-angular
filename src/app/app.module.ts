@@ -61,7 +61,7 @@ import { GlobalErrorHandler } from './global-error-handler';
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(environment.sharedEnvVars['GOOGLE_CLIENT_ID']),
+            provider: new GoogleLoginProvider(environment.envVars['GOOGLE_CLIENT_ID']),
           },
         ],
       } as SocialAuthServiceConfig,

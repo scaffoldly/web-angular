@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Providers } from '../interfaces/providers';
 
 @Component({
   selector: 'app-google-login',
@@ -7,6 +8,14 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 })
 export class GoogleLoginComponent implements OnInit {
   @Output() clicked: EventEmitter<Event> = new EventEmitter();
+
+  public enabled = false;
+
+  @Input() set providers(providers: Providers) {
+    if (providers && providers['GOOGLE']) {
+      this.enabled = true;
+    }
+  }
 
   constructor() {}
 

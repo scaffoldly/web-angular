@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Account } from '@app/@shared/interfaces/account';
 import { AccountService } from '@app/@shared/service/account.service';
-import { CredentialsService } from '@app/@shared/service/credentials.service';
+import { AuthenticationService } from '@app/@shared/service/authentication.service';
 import { ButtonComponent } from '../button/button.component';
 
 type Mode = 'create' | 'update';
@@ -23,23 +23,28 @@ export class ProfileFormComponent implements OnInit {
   });
   @ViewChild('submitButton') submitButton: ButtonComponent;
 
-  constructor(private credentialsService: CredentialsService, private accountService: AccountService) {}
+  constructor(private authenticationService: AuthenticationService, private accountService: AccountService) {}
 
   ngOnInit(): void {
     if (this.mode === 'create') {
-      const { credential } = this.credentialsService;
-      const { payload } = credential;
+      const { payload } = this.authenticationService;
+      if (!payload) {
+        return;
+      }
+
       const { name, email } = payload;
       this.formGroup.get('name').setValue(name);
       this.formGroup.get('email').setValue(email);
     }
 
     if (this.mode === 'update') {
-      this.accountService.getAccount().subscribe((account) => {
-        const { name, email, company } = account;
-        this.formGroup.get('name').setValue(name);
-        this.formGroup.get('email').setValue(email);
-        this.formGroup.get('company').setValue(company);
+      this.accountService.getCurrentAccount().subscribe((account) => {
+        if (account) {
+          const { name, email, company } = account.detail;
+          this.formGroup.get('name').setValue(name);
+          this.formGroup.get('email').setValue(email);
+          this.formGroup.get('company').setValue(company);
+        }
       });
     }
   }
@@ -63,13 +68,18 @@ export class ProfileFormComponent implements OnInit {
     }
 
     if (this.mode === 'update') {
+      const { id } = this.authenticationService;
+      if (!id) {
+        throw new Error('ID is not set');
+      }
+
       this.accountService
-        .updateAccount({
+        .updateAccount(id, {
           name: this.formGroup.get('name').dirty ? this.formGroup.get('name').value : undefined,
           company: this.formGroup.get('company').dirty ? this.formGroup.get('company').value : undefined,
         })
         .subscribe((account) => {
-          const { name, email, company } = account;
+          const { name, email, company } = account.detail;
           this.formGroup.get('name').setValue(name);
           this.formGroup.get('email').setValue(email);
           this.formGroup.get('company').setValue(company);

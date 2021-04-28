@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { Account } from '@app/@shared/interfaces/account';
+import { AccountService } from '@app/@shared/service/account.service';
 import { AuthenticationService } from '@app/@shared/service/authentication.service';
-import { CredentialsService } from '@app/@shared/service/credentials.service';
 
 @Component({
   selector: 'app-header',
@@ -10,15 +10,30 @@ import { CredentialsService } from '@app/@shared/service/credentials.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
+  id: string;
+  name: string;
+  company?: string;
   menuHidden = true;
 
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
-    private credentialsService: CredentialsService
+    private accountService: AccountService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.accountService.getCurrentAccount().subscribe((account: Account) => {
+      if (account) {
+        this.id = account.id;
+        this.name = account.detail.name;
+        this.company = account.detail.company;
+      } else {
+        this.id = null;
+        this.name = null;
+        this.company = null;
+      }
+    });
+  }
 
   toggleMenu() {
     this.menuHidden = !this.menuHidden;
@@ -28,18 +43,8 @@ export class HeaderComponent implements OnInit {
     this.authenticationService.logout().subscribe(() => this.router.navigate(['/login'], { replaceUrl: true }));
   }
 
-  get id(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.id : null;
-  }
-
-  get name(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.name : null;
-  }
-
   get photoUrl(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.photoUrl : null;
+    const { payload } = this.authenticationService;
+    return payload ? payload.photoUrl : null;
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Account } from '@app/@shared/interfaces/account';
-import { CredentialsService } from '@app/@shared/service/credentials.service';
+import { AuthenticationService } from '@app/@shared/service/authentication.service';
 
 @Component({
   selector: 'app-account-profile',
@@ -11,11 +11,14 @@ import { CredentialsService } from '@app/@shared/service/credentials.service';
 export class AccountProfileComponent implements OnInit {
   formGroup: FormGroup;
 
-  constructor(private credentialsService: CredentialsService) {}
+  constructor(private authenticationService: AuthenticationService) {}
 
   ngOnInit(): void {
-    const { credential } = this.credentialsService;
-    const { payload } = credential;
+    const { payload } = this.authenticationService;
+    if (!payload) {
+      return;
+    }
+
     const { name, email } = payload;
     this.formGroup = new FormGroup({
       name: new FormControl(name, [Validators.required, Validators.minLength(3)]),
@@ -28,7 +31,7 @@ export class AccountProfileComponent implements OnInit {
   onUpdate(account: Account): void {}
 
   get photoUrl(): string | null {
-    const credentials = this.credentialsService.credential;
-    return credentials ? credentials.payload.photoUrl : null;
+    const { payload } = this.authenticationService;
+    return payload ? payload.photoUrl : null;
   }
 }

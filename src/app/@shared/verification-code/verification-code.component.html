@@ -1,0 +1,22 @@
+<div>
+  <div *ngIf="verificationMethod === 'EMAIL'" class="text-center text-secondary">
+    <div>We just sent you a temporary login code.</div>
+    <div>Please check your inbox.</div>
+  </div>
+  <div *ngIf="verificationMethod === 'AUTHENTICATOR'" class="text-center text-secondary">
+    <div>Please enter the code from your authenticator app.</div>
+  </div>
+  <div class="mt-2">
+    <form>
+      <div class="form-group">
+        <label class="d-block">
+          <input class="form-control" [formControl]="code" [placeholder]="'Code' | translate" />
+          <small [hidden]="code.untouched || code.valid" class="text-danger" translate> Code is required </small>
+        </label>
+      </div>
+      <button class="btn btn-primary w-100" type="submit" [disabled]="code.invalid" (click)="this.onClick(code.value)">
+        <span translate><i class="fas fa-keyboard mr-2"></i>Verify Code</span>
+      </button>
+    </form>
+  </div>
+</div>

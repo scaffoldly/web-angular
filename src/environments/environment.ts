@@ -17,7 +17,7 @@ export const environment = {
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],
   serviceUrls: env.service_urls,
-  sharedEnvVars: env.shared_env_vars,
+  envVars: env.env_vars,
 };
 
 /*

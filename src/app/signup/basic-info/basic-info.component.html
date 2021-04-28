@@ -3,7 +3,7 @@
     <div class="card-body">
       <h5 class="card-title" translate>Basic Information</h5>
       <p class="card-text">
-        <app-profile-form mode="create" (onUpdate)="this.onNext.emit()"></app-profile-form>
+        <app-profile-form mode="create" (onUpdate)="submit($event)"></app-profile-form>
       </p>
     </div>
   </div>

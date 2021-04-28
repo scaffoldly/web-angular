@@ -6,20 +6,18 @@
     </div>
   </div>
   <div class="row">
-    <div *ngFor="let method of this.methods | keyvalue" class="col-lg-6 col-md-8 col-sm-10 col-12 pt-3 pb-3">
-      <h5>{{ method.value.name }}</h5>
-      <button class="btn btn-primary" [disabled]="this.logins[method.key]">
-        <i *ngIf="this.logins[method.key]" class="fas fa-check mr-2"></i>
-        <i *ngIf="!this.logins[method.key]" class="fas fa-plus mr-2"></i>
-        {{ this.logins[method.key] ? 'Connected' : 'Connect' }}
-      </button>
-      <button
-        *ngIf="this.logins[method.key]"
-        class="btn btn-secondary"
-        (click)="this.disconnectSocialLogin(method.key)"
-      >
-        Disconnect
-      </button>
+    <div class="col-12">
+      <app-loader [loading]="this.loading"></app-loader>
+      <div class="row">
+        <div *ngFor="let login of this.logins | keyvalue" class="col-lg-6 col-md-8 col-sm-10 col-12 pt-3 pb-3">
+          <h5>{{ login.value.name }}</h5>
+          <button class="btn btn-primary" [disabled]="login.value.payload" (click)="this.connect(login.key)">
+            <i *ngIf="login.value.payload" class="fas fa-check mr-2"></i>
+            <i *ngIf="!login.value.payload" class="fas fa-plus mr-2"></i>
+            {{ login.value.payload ? 'Connected' : 'Connect' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
