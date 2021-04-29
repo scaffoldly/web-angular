@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   error: string | undefined;
   loading = true;
   providers: Providers;
+  separator = false;
 
   verificationMethod: VerificationMethod;
 
@@ -40,6 +41,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authenticationService.providers.subscribe((providers) => {
       this.loading = false;
       this.providers = providers;
+      if (providers && Object.keys(providers).length > 1) {
+        this.separator = true;
+      }
     });
   }
 

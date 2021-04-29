@@ -19,10 +19,26 @@ import { SignupModule } from './signup/signup.module';
 import { AccountModule } from './account/account.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 'angularx-social-login';
+import { GoogleLoginProvider, LoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 'angularx-social-login';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule } from 'ngx-toastr';
 import { GlobalErrorHandler } from './global-error-handler';
+
+export type SocialLoginProvider = {
+  id: string;
+  provider: LoginProvider;
+};
+
+const loginProviders = (): SocialLoginProvider[] => {
+  const providers: SocialLoginProvider[] = [];
+  if (environment.envVars['GOOGLE_CLIENT_ID']) {
+    providers.push({
+      id: GoogleLoginProvider.PROVIDER_ID,
+      provider: new GoogleLoginProvider(environment.envVars['GOOGLE_CLIENT_ID']),
+    });
+  }
+  return providers;
+};
 
 @NgModule({
   imports: [
@@ -58,12 +74,7 @@ import { GlobalErrorHandler } from './global-error-handler';
       provide: 'SocialAuthServiceConfig',
       useValue: {
         autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(environment.envVars['GOOGLE_CLIENT_ID']),
-          },
-        ],
+        providers: loginProviders(),
       } as SocialAuthServiceConfig,
     },
   ],
