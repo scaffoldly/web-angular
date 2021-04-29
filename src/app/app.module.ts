@@ -7,7 +7,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { environment } from '@env/environment';
 import { CoreModule } from '@core';
 import { SharedModule } from '@shared';
 import { LoginModule } from '@app/login/login.module';
@@ -23,6 +22,7 @@ import { GoogleLoginProvider, LoginProvider, SocialAuthServiceConfig, SocialLogi
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule } from 'ngx-toastr';
 import { GlobalErrorHandler } from './global-error-handler';
+import { environment } from '@env/environment';
 
 export type SocialLoginProvider = {
   id: string;
@@ -31,7 +31,7 @@ export type SocialLoginProvider = {
 
 const loginProviders = (): SocialLoginProvider[] => {
   const providers: SocialLoginProvider[] = [];
-  if (environment.envVars.hasOwnProperty('GOOGLE_CLIENT_ID')) {
+  if (environment.envVars['GOOGLE_CLIENT_ID']) {
     providers.push({
       id: GoogleLoginProvider.PROVIDER_ID,
       provider: new GoogleLoginProvider(environment.envVars['GOOGLE_CLIENT_ID']),
