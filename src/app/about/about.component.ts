@@ -9,6 +9,7 @@ import { environment } from '@env/environment';
 })
 export class AboutComponent implements OnInit {
   version: string | null = environment.version;
+  appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
 
   constructor() {}
 
