@@ -23,6 +23,7 @@ const log = new Logger('Login');
 })
 export class LoginComponent implements OnInit, OnDestroy {
   version: string | null = environment.version;
+  appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
   error: string | undefined;
   loading = true;
   providers: Providers;
