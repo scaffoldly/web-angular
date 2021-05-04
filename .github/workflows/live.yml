@@ -2,7 +2,6 @@ name: Live Deploy
 on:
   release:
     types: [created]
-
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   AWS_PARTITION: ${{ secrets.LIVE_AWS_PARTITION }}
@@ -16,7 +15,6 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: "!startsWith(github.event.head_commit.message, 'Initial commit') && !startsWith(github.event.head_commit.message, '[Scaffoldly]')"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2-beta
@@ -30,9 +28,6 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn
       - run: yarn build
-      - uses: 'scaffoldly/github-action-bump-version-npm@master'
-        with:
-          tag-prefix: ''
       - run: aws s3 sync . "s3://$BUCKET_NAME"
         working-directory: dist
       - run: aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
