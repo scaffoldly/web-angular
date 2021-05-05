@@ -31,9 +31,11 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn
       - run: yarn build
-      - uses: 'scaffoldly/github-action-bump-version-npm@master'
+      - uses: scaffoldly/bump-version-action@1.0.86
         with:
-          tag-prefix: ''
+          action: prerelease
+          version-file: package.json
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: aws s3 sync . "s3://$BUCKET_NAME"
         working-directory: dist
       - run: aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
