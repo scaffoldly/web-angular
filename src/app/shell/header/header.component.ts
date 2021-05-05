@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Account } from '@app/@shared/interfaces/account';
 import { AccountService } from '@app/@shared/service/account.service';
 import { AuthenticationService } from '@app/@shared/service/authentication.service';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-header',
@@ -10,6 +11,7 @@ import { AuthenticationService } from '@app/@shared/service/authentication.servi
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
+  appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
   id: string;
   name: string;
   company?: string;

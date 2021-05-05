@@ -21,6 +21,7 @@ import { Providers } from '../interfaces/providers';
 import { Email } from '../email-login/email-login.component';
 
 export const loginResponseKey = 'loginResponse';
+export const refreshHeader = 'X-Auth-Refresh';
 
 @Injectable({
   providedIn: 'root',
@@ -99,7 +100,7 @@ export class AuthenticationService {
       return this.setLoginResponse();
     }
 
-    return this.httpClient.post(refreshUrl, {}, { withCredentials: true }).pipe(
+    return this.httpClient.post(refreshUrl, {}, { withCredentials: true, headers: { [refreshHeader]: 'true' } }).pipe(
       mergeMap((body: LoginResponse) => {
         return this.setLoginResponse(body, true);
       })

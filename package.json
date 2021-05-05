@@ -1,6 +1,6 @@
 {
-  "name": "ng-x-rocket",
-  "version": "1.3.0",
+  "name": "angular",
+  "version": "1.5.0",
   "scripts": {
     "ng": "ng",
     "build": "yarn prepare && ng build --prod",
