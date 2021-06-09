@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginPayload } from '@app/@shared/interfaces/authentication';
-import { Providers } from '@app/@shared/interfaces/providers';
-import { AccountService } from '@app/@shared/service/account.service';
-import { AuthenticationService } from '@app/@shared/service/authentication.service';
-import { map, mergeMap } from 'rxjs/operators';
+import { JwtService, ProviderDetail } from '@app/@openapi/auth';
+import { map } from 'rxjs/operators';
 
-type Logins = { [key: string]: { name: string; payload: LoginPayload } };
+type Logins = { [key: string]: ProviderDetail };
 
 @Component({
   selector: 'app-account-detail',
@@ -16,20 +13,18 @@ export class AccountDetailComponent implements OnInit {
   loading = true;
   logins: Logins = {};
 
-  constructor(private authenticationService: AuthenticationService) {}
+  constructor(private jwtService: JwtService) {}
 
   ngOnInit(): void {
-    this.authenticationService.providers
+    this.jwtService
+      .getLoginDetail()
+      .pipe(map((loginDetail) => loginDetail.providers))
       .pipe(
-        mergeMap((providers) => {
-          return this.authenticationService.logins.pipe(
-            map((logins) => {
-              return Object.entries(providers).reduce((acc, [key, value]) => {
-                acc[key] = { name: value.name, payload: logins[key] };
-                return acc;
-              }, {} as Logins);
-            })
-          );
+        map((providers) => {
+          return Object.entries(providers).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {} as Logins);
         })
       )
       .subscribe((logins) => {

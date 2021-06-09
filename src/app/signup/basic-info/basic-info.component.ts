@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Account } from '@app/@shared/interfaces/account';
+import { AccountResponse } from '@app/@openapi/auth';
 
 @Component({
   selector: 'app-basic-info',
@@ -7,12 +7,12 @@ import { Account } from '@app/@shared/interfaces/account';
   styleUrls: ['./basic-info.component.scss'],
 })
 export class BasicInfoComponent implements OnInit {
-  @Output() onNext: EventEmitter<Account> = new EventEmitter();
+  @Output() onNext: EventEmitter<AccountResponse> = new EventEmitter();
   constructor() {}
 
   ngOnInit(): void {}
 
-  submit(account: Account) {
+  submit(account: AccountResponse) {
     this.onNext.emit(account);
   }
 }

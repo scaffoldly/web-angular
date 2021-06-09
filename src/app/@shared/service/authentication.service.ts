@@ -1,115 +1,107 @@
 import { Injectable } from '@angular/core';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
-import {
-  Observable,
-  of,
-  from,
-  throwError,
-  BehaviorSubject,
-  ErrorObserver,
-  CompletionObserver,
-  AsyncSubject,
-  merge,
-  Subject,
-} from 'rxjs';
+import { Observable, from, BehaviorSubject } from 'rxjs';
 
 import { map, mergeMap } from 'rxjs/operators';
-import { EmailLoginRequest, LoginPayload, LoginResponse, SocialLoginRequest } from '../interfaces/authentication';
-import { environment } from '@env/environment';
-import { HttpClient } from '@angular/common/http';
-import { Providers } from '../interfaces/providers';
 import { Email } from '../email-login/email-login.component';
+import CoreError from '@app/@core/core-error';
+import { JwtPayload, JwtService, Provider, TokenResponse } from '@app/@openapi/auth';
 
-export const loginResponseKey = 'loginResponse';
+export const tokenResponseKey = 'token';
 export const refreshHeader = 'X-Auth-Refresh';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private loginResponse: LoginResponse;
-  public readonly loginResponse$: BehaviorSubject<LoginResponse> = new BehaviorSubject(null);
+  private tokenResponse: TokenResponse;
+  public readonly tokenResponse$: BehaviorSubject<TokenResponse> = new BehaviorSubject(null);
 
-  private baseUrl = environment.serviceUrls['sly-auth-api'];
-
-  constructor(private httpClient: HttpClient, private socialAuthService: SocialAuthService) {
-    this.loginResponse$.subscribe((loginResponse) => {
-      this.loginResponse = loginResponse;
+  constructor(private socialAuthService: SocialAuthService, private jwtService: JwtService) {
+    this.tokenResponse$.subscribe((tokenResponse) => {
+      this.tokenResponse = tokenResponse;
     });
 
-    const savedLoginResponse = sessionStorage.getItem(loginResponseKey) || localStorage.getItem(loginResponseKey);
-    if (savedLoginResponse) {
-      this.setLoginResponse(JSON.parse(savedLoginResponse));
+    const tokenResponse = sessionStorage.getItem(tokenResponseKey) || localStorage.getItem(tokenResponseKey);
+    if (tokenResponse) {
+      this.setTokenResponse(JSON.parse(tokenResponse));
     }
   }
 
   get authenticated(): boolean {
-    return this.loginResponse && this.loginResponse.token && this.loginResponse.verified;
+    return this.tokenResponse && this.tokenResponse.token && this.tokenResponse.verified;
   }
 
   get id(): string | null {
-    return this.loginResponse && this.loginResponse.id;
+    return this.tokenResponse && this.tokenResponse.id;
+  }
+
+  get email(): string | null {
+    return this.tokenResponse && this.tokenResponse.email;
+  }
+
+  get name(): string | null {
+    return this.tokenResponse && this.tokenResponse.name;
+  }
+
+  get photoUrl(): string | null {
+    return this.tokenResponse && this.tokenResponse.photoUrl;
   }
 
   get token(): string | null {
-    return this.loginResponse && this.loginResponse.token;
+    return this.tokenResponse && this.tokenResponse.token;
   }
 
-  get payload(): LoginPayload | null {
-    return this.loginResponse && this.loginResponse.payload;
+  get payload(): JwtPayload | null {
+    return this.tokenResponse && this.tokenResponse.payload;
   }
 
-  public get providers(): Observable<Providers> {
-    return this.httpClient.get(`${this.baseUrl}/api/v1/login/providers`).pipe(
-      map((body: Providers) => {
-        return body;
-      })
-    );
+  socialLogin(provider: Provider): Observable<TokenResponse> {
+    return from(this.socialAuthService.signIn(provider))
+      .pipe(
+        mergeMap((socialUser) => {
+          switch (provider) {
+            case 'GOOGLE':
+              return this.jwtService.googleLogin({
+                id: socialUser.id,
+                authToken: socialUser.authToken,
+                idToken: socialUser.idToken,
+                email: socialUser.email,
+                name: socialUser.name,
+                photoUrl: socialUser.photoUrl,
+              });
+            default:
+              throw new CoreError(`Unknown provider: ${provider}`);
+          }
+        })
+      )
+      .pipe(mergeMap((tokenResponse) => this.setTokenResponse(tokenResponse, true)));
   }
 
-  // TODO: fix this in the backend
-  public get logins(): Observable<{ [key: string]: LoginPayload }> {
-    return this.httpClient.get(`${this.baseUrl}/api/v1/login`).pipe(
-      map((body: { [key: string]: LoginPayload }) => {
-        return body;
-      })
-    );
+  emailLogin(email: Email, code?: string): Observable<TokenResponse> {
+    return this.jwtService
+      .emailLogin({ email, code })
+      .pipe(mergeMap((tokenResponse) => this.setTokenResponse(tokenResponse, code ? true : false)));
   }
 
-  socialLogin(providerId: string): Observable<LoginResponse> {
-    return from(this.socialAuthService.signIn(providerId))
-      .pipe(mergeMap((socialUser) => this.login(socialUser)))
-      .pipe(mergeMap((loginResponse) => this.setLoginResponse(loginResponse, true)));
-  }
-
-  emailLogin(email: Email, code?: string): Observable<LoginResponse> {
-    return this.login(new EmailLoginRequest(email, code)).pipe(
-      mergeMap((loginResponse) => this.setLoginResponse(loginResponse, code ? true : false))
-    );
-  }
-
-  refresh(): Observable<LoginResponse> {
+  refresh(): Observable<TokenResponse> {
     if (!this.payload) {
       console.warn('Payload missing from authentication context');
-      return this.setLoginResponse();
+      return this.setTokenResponse();
     }
 
     const { refreshUrl } = this.payload;
     if (!refreshUrl) {
       console.warn('Refresh URL missing from authentication context');
-      return this.setLoginResponse();
+      return this.setTokenResponse();
     }
 
-    return this.httpClient.post(refreshUrl, {}, { withCredentials: true, headers: { [refreshHeader]: 'true' } }).pipe(
-      mergeMap((body: LoginResponse) => {
-        return this.setLoginResponse(body, true);
-      })
-    );
+    return this.jwtService.refresh().pipe(mergeMap((tokenResponse) => this.setTokenResponse(tokenResponse)));
   }
 
   logout(): Observable<boolean> {
     return from(this.socialAuthService.signOut().catch(() => {}))
-      .pipe(mergeMap(() => this.setLoginResponse()))
+      .pipe(mergeMap(() => this.setTokenResponse()))
       .pipe(
         map(() => {
           return true;
@@ -117,26 +109,18 @@ export class AuthenticationService {
       );
   }
 
-  private login(request: SocialLoginRequest | EmailLoginRequest): Observable<LoginResponse> {
-    return this.httpClient.post(`${this.baseUrl}/api/v1/login`, request, { withCredentials: true }).pipe(
-      map((body: LoginResponse) => {
-        return body;
-      })
-    );
-  }
+  private setTokenResponse(tokenResponse?: TokenResponse, remember?: boolean): Observable<TokenResponse> {
+    sessionStorage.removeItem(tokenResponseKey);
+    localStorage.removeItem(tokenResponseKey);
 
-  private setLoginResponse(loginResponse?: LoginResponse, remember?: boolean): Observable<LoginResponse> {
-    sessionStorage.removeItem(loginResponseKey);
-    localStorage.removeItem(loginResponseKey);
-
-    if (loginResponse) {
+    if (tokenResponse) {
       const storage = remember ? localStorage : sessionStorage;
-      storage.setItem(loginResponseKey, JSON.stringify(loginResponse));
-      this.loginResponse$.next(loginResponse);
+      storage.setItem(tokenResponseKey, JSON.stringify(tokenResponse));
+      this.tokenResponse$.next(tokenResponse);
     } else {
-      this.loginResponse$.next(null);
+      this.tokenResponse$.next(null);
     }
 
-    return this.loginResponse$.asObservable();
+    return this.tokenResponse$.asObservable();
   }
 }

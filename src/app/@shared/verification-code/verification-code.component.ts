@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { VerificationMethod } from '../interfaces/authentication';
+import { VerificationMethod } from '@app/@openapi/auth';
 
 @Component({
   selector: 'app-verification-code',
