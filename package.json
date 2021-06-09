@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "1.8.0",
+  "version": "1.10.0",
   "scripts": {
     "ng": "ng",
     "build": "yarn prepare && ng build --prod",
@@ -12,11 +12,13 @@
     "e2e": "yarn prepare && ng e2e",
     "translations:extract": "ngx-translate-extract --input ./src --output ./src/translations/template.json --format=json --clean --sort",
     "docs": "hads ./docs -o",
-    "prepare": "dotenv -e .scaffoldly/.env -c $NODE_ENV -- ngx-scripts env npm_package_version service_urls env_vars --parse-json",
+    "prepare": "yarn dotenv && yarn openapi",
     "prettier": "prettier --write \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
     "prettier:check": "prettier --list-different \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
     "postinstall": "yarn prettier -s",
-    "generate": "ng generate"
+    "generate": "ng generate",
+    "dotenv": "dotenv -e .scaffoldly/.env -c $NODE_ENV -- ngx-scripts env npm_package_version service_urls env_vars --parse-json",
+    "openapi": "yarn openapi-generator -g angular -i .scaffoldly/$NODE_ENV -o src/app/@openapi"
   },
   "dependencies": {
     "@angular/animations": "^10.1.4",
@@ -53,6 +55,7 @@
     "@biesbjerg/ngx-translate-extract": "^7.0.3",
     "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@ngx-rocket/scripts": "^5.1.0",
+    "@scaffoldly/openapi-generator": "^1.0.10",
     "@types/jasmine": "^3.5.14",
     "@types/jasminewd2": "^2.0.8",
     "@types/jest": "^26.0.12",

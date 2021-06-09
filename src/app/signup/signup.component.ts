@@ -1,13 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Logger } from '@app/@core';
-import CoreError from '@app/@core/core-error';
-import { Account } from '@app/@shared/interfaces/account';
-import { AccountService } from '@app/@shared/service/account.service';
-import { AuthenticationService } from '@app/@shared/service/authentication.service';
-import { of, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 
 const log = new Logger('Signup');
 @Component({
@@ -20,12 +13,7 @@ export class SignupComponent implements OnInit {
   pages = ['terms-and-conditions', 'basic-info'];
 
   // TODO Hide stuff (header or links in header if we're in this component)
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private accountService: AccountService,
-    private authenticationService: AuthenticationService
-  ) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   next() {
     const nextFragment = this.pages.reduce((acc, fragment, index, keys) => {

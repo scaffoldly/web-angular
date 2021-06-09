@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Providers } from '../interfaces/providers';
+import { ProviderResponse } from '@app/@openapi/auth';
 
 @Component({
   selector: 'app-google-login',
@@ -11,8 +11,8 @@ export class GoogleLoginComponent implements OnInit {
 
   public enabled = false;
 
-  @Input() set providers(providers: Providers) {
-    if (providers && providers['GOOGLE']) {
+  @Input() set providers(providers: ProviderResponse) {
+    if (providers && providers['GOOGLE'] && providers['GOOGLE'].enabled) {
       this.enabled = true;
     }
   }

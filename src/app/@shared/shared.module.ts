@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { LoaderComponent } from './loader/loader.component';
-import { AppleLoginComponent } from './apple-login/apple-login.component';
 import { GoogleLoginComponent } from './google-login/google-login.component';
 import { EmailLoginComponent } from './email-login/email-login.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +15,6 @@ import { VerificationCodeComponent } from './verification-code/verification-code
   declarations: [
     LoaderComponent,
     GoogleLoginComponent,
-    AppleLoginComponent,
     EmailLoginComponent,
     ProfileFormComponent,
     VerificationCodeComponent,
@@ -25,7 +23,6 @@ import { VerificationCodeComponent } from './verification-code/verification-code
   exports: [
     LoaderComponent,
     GoogleLoginComponent,
-    AppleLoginComponent,
     EmailLoginComponent,
     VerificationCodeComponent,
     ProfileFormComponent,

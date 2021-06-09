@@ -1,18 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { finalize, map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
 import { Logger } from '@core';
 import { AuthenticationService } from '../@shared/service/authentication.service';
-import { GoogleLoginProvider } from 'angularx-social-login';
-import { throwError } from 'rxjs';
-import { Providers } from '@app/@shared/interfaces/providers';
-import { AccountService } from '@app/@shared/service/account.service';
 import { Email } from '@app/@shared/email-login/email-login.component';
-import { LoginResponse, VerificationMethod } from '@app/@shared/interfaces/authentication';
 import CoreError from '@app/@core/core-error';
+import { AccountService, JwtService, ProviderResponse, VerificationMethod } from '@app/@openapi/auth';
 
 const log = new Logger('Login');
 
@@ -26,25 +21,25 @@ export class LoginComponent implements OnInit, OnDestroy {
   appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
   error: string | undefined;
   loading = true;
-  providers: Providers;
+  providers: ProviderResponse;
   separator = false;
 
   verificationMethod: VerificationMethod;
+  email: string;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private accountService: AccountService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private jwtService: JwtService,
+    private accountService: AccountService
   ) {}
 
   ngOnInit() {
-    this.authenticationService.providers.subscribe((providers) => {
+    this.jwtService.getProviders().subscribe((providers) => {
       this.loading = false;
       this.providers = providers;
-      if (providers && Object.keys(providers).length > 1) {
-        this.separator = true;
-      }
+      this.separator = !providers.EMAIL.enabled;
     });
   }
 
@@ -52,15 +47,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   reset() {
     this.loading = false;
-    this.verificationMethod = null;
     this.error = null;
+    this.verificationMethod = null;
+    this.email = null;
   }
 
   googleLogin() {
     this.loading = true;
     this.authenticationService
-      .socialLogin(GoogleLoginProvider.PROVIDER_ID)
-      .pipe(mergeMap((loginResponse) => this.accountService.getAccount(loginResponse.id)))
+      .socialLogin('GOOGLE')
+      .pipe(mergeMap((loginResponse) => this.accountService.getAccountById(loginResponse.id)))
       .subscribe(
         (account) => {
           log.debug(`${account.id} successfully logged in`);
@@ -84,6 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       (loginResponse) => {
         if (loginResponse && !loginResponse.verified) {
           this.loading = false;
+          this.email = email;
           this.verificationMethod = loginResponse.verificationMethod;
           this.error = null;
         }
@@ -97,14 +94,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   verifyCode(code: string) {
     this.loading = true;
-    const { id } = this.authenticationService;
-    if (!id) {
-      throw new Error('ID is not set');
-    }
-
     this.authenticationService
-      .emailLogin(id, code)
-      .pipe(mergeMap((loginResponse) => this.accountService.getAccount(loginResponse.id)))
+      .emailLogin(this.email, code)
+      .pipe(mergeMap(() => this.accountService.getMyAccount()))
       .subscribe(
         (account) => {
           log.debug(`${account.id} successfully logged in`);
@@ -112,11 +104,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         },
         (error: CoreError) => {
           if (error.code === 404) {
-            log.debug(`${id} successfully logged in, but an account needs to be created`);
+            log.debug(`${this.email} successfully logged in, but an account needs to be created`);
             this.router.navigate([this.route.snapshot.queryParams.redirect || '/signup'], { replaceUrl: true });
             return;
           }
           this.loading = false;
+          this.email = null;
           this.error = error.message;
         }
       );
