@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Providers } from '../interfaces/providers';
-import { AuthenticationService } from '../service/authentication.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ProviderResponse } from '@app/@openapi/auth';
 
 export type Email = string;
 
@@ -17,8 +16,8 @@ export class EmailLoginComponent implements OnInit {
 
   enabled = false;
 
-  @Input() set providers(providers: Providers) {
-    if (providers && providers['EMAIL']) {
+  @Input() set providers(providers: ProviderResponse) {
+    if (providers && providers['EMAIL'] && providers['EMAIL'].enabled) {
       this.enabled = true;
     }
   }

@@ -9,6 +9,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreModule } from '@core';
 import { SharedModule } from '@shared';
+import { AuthApiModule } from '@openapi/auth';
 import { LoginModule } from '@app/login/login.module';
 import { AuthModule } from '@app/@shared/auth';
 import { HomeModule } from './home/home.module';
@@ -62,6 +63,7 @@ const loginProviders = (): SocialLoginProvider[] => {
     AuthModule,
     SocialLoginModule,
     FontAwesomeModule,
+    AuthApiModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
   declarations: [AppComponent],

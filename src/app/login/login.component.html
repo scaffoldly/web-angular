@@ -13,7 +13,6 @@
           <app-loader [loading]="loading"></app-loader>
           <div class="alert alert-danger" [hidden]="!error" translate>{{ error }}</div>
           <app-google-login class="m-2" [providers]="this.providers" (clicked)="googleLogin()"></app-google-login>
-          <app-apple-login class="m-2" [providers]="this.providers"></app-apple-login>
           <div *ngIf="this.separator" class="separator pb-3">OR</div>
           <app-email-login class="m-2" [providers]="this.providers" (clicked)="emailLogin($event)"></app-email-login>
         </div>
