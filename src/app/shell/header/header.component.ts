@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Account } from '@app/@shared/interfaces/account';
-import { AccountService } from '@app/@shared/service/account.service';
+import { AccountResponse } from '@app/@openapi/auth';
 import { AuthenticationService } from '@app/@shared/service/authentication.service';
+import { CurrentAccountService } from '@app/@shared/service/current-account.service';
 import { environment } from '@env/environment';
 
 @Component({
@@ -12,7 +12,8 @@ import { environment } from '@env/environment';
 })
 export class HeaderComponent implements OnInit {
   appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
-  id: string;
+  account: AccountResponse;
+  email: string;
   name: string;
   company?: string;
   menuHidden = true;
@@ -20,21 +21,31 @@ export class HeaderComponent implements OnInit {
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
-    private accountService: AccountService
+    private currentAccountService: CurrentAccountService
   ) {}
 
   ngOnInit() {
-    this.accountService.getCurrentAccount().subscribe((account: Account) => {
-      if (account) {
-        this.id = account.id;
-        this.name = account.detail.name;
-        this.company = account.detail.company;
-      } else {
-        this.id = null;
+    this.currentAccountService.get().subscribe(
+      (account: AccountResponse) => {
+        if (account) {
+          this.account = account;
+          this.email = account.email;
+          this.name = account.name;
+          this.company = account.company;
+        } else {
+          this.account = null;
+          this.email = null;
+          this.name = null;
+          this.company = null;
+        }
+      },
+      () => {
+        this.account = null;
+        this.email = null;
         this.name = null;
         this.company = null;
       }
-    });
+    );
   }
 
   toggleMenu() {
@@ -45,8 +56,7 @@ export class HeaderComponent implements OnInit {
     this.authenticationService.logout().subscribe(() => this.router.navigate(['/login'], { replaceUrl: true }));
   }
 
-  get photoUrl(): string | null {
-    const { payload } = this.authenticationService;
-    return payload ? payload.photoUrl : null;
+  get photoUrl(): string {
+    return this.authenticationService.photoUrl;
   }
 }

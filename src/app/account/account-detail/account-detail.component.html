@@ -11,10 +11,10 @@
       <div class="row">
         <div *ngFor="let login of this.logins | keyvalue" class="col-lg-6 col-md-8 col-sm-10 col-12 pt-3 pb-3">
           <h5>{{ login.value.name }}</h5>
-          <button class="btn btn-primary" [disabled]="login.value.payload" (click)="this.connect(login.key)">
-            <i *ngIf="login.value.payload" class="fas fa-check mr-2"></i>
-            <i *ngIf="!login.value.payload" class="fas fa-plus mr-2"></i>
-            {{ login.value.payload ? 'Connected' : 'Connect' }}
+          <button class="btn btn-primary" [disabled]="login.value.enabled" (click)="this.connect(login.key)">
+            <i *ngIf="login.value.enabled" class="fas fa-check mr-2"></i>
+            <i *ngIf="!login.value.enabled" class="fas fa-plus mr-2"></i>
+            {{ login.value.enabled ? 'Connected' : 'Connect' }}
           </button>
         </div>
       </div>

@@ -1,27 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable, of, Subscription } from 'rxjs';
+import { TokenResponse } from '@app/@openapi/auth';
+import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { LoginResponse } from '../interfaces/authentication';
 import { AuthenticationService } from '../service/authentication.service';
+import { CurrentAccountService } from '../service/current-account.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationGuard implements CanActivate {
-  private loginResponse: LoginResponse;
-  constructor(private router: Router, private authenticationService: AuthenticationService) {
-    this.authenticationService.loginResponse$.subscribe((loginResponse) => {
-      this.loginResponse = loginResponse;
+  private tokenResponse: TokenResponse;
+  constructor(
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    private currentAccountService: CurrentAccountService
+  ) {
+    this.authenticationService.tokenResponse$.subscribe((tokenResponse) => {
+      this.tokenResponse = tokenResponse;
     });
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (!this.loginResponse || !this.loginResponse.token || !this.loginResponse.verified) {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    if (!this.tokenResponse || !this.tokenResponse.token || !this.tokenResponse.verified) {
       this.router.navigate(['/login'], { replaceUrl: true });
-      return false;
+      return of(false);
     }
 
-    return true;
+    return of(true);
   }
 }

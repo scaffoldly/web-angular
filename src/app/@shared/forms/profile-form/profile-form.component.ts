@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Account } from '@app/@shared/interfaces/account';
-import { AccountService } from '@app/@shared/service/account.service';
+import { CurrentAccountService } from '@app/@shared/service/current-account.service';
 import { AuthenticationService } from '@app/@shared/service/authentication.service';
 import { ButtonComponent } from '../button/button.component';
+import { AccountResponse } from '@app/@openapi/auth';
 
 type Mode = 'create' | 'update';
 
@@ -15,7 +15,7 @@ type Mode = 'create' | 'update';
 export class ProfileFormComponent implements OnInit {
   @Input() title: string | undefined;
   @Input() mode: Mode = 'update';
-  @Output() onUpdate: EventEmitter<Account> = new EventEmitter();
+  @Output() onUpdate: EventEmitter<AccountResponse> = new EventEmitter();
   formGroup: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -23,24 +23,23 @@ export class ProfileFormComponent implements OnInit {
   });
   @ViewChild('submitButton') submitButton: ButtonComponent;
 
-  constructor(private authenticationService: AuthenticationService, private accountService: AccountService) {}
+  constructor(
+    private authenticationService: AuthenticationService,
+    private currentAccountService: CurrentAccountService
+  ) {}
 
   ngOnInit(): void {
     if (this.mode === 'create') {
-      const { payload } = this.authenticationService;
-      if (!payload) {
-        return;
-      }
+      const { name, email } = this.authenticationService;
 
-      const { name, email } = payload;
       this.formGroup.get('name').setValue(name);
       this.formGroup.get('email').setValue(email);
     }
 
     if (this.mode === 'update') {
-      this.accountService.getCurrentAccount().subscribe((account) => {
+      this.currentAccountService.get().subscribe((account) => {
         if (account) {
-          const { name, email, company } = account.detail;
+          const { name, email, company } = account;
           this.formGroup.get('name').setValue(name);
           this.formGroup.get('email').setValue(email);
           this.formGroup.get('company').setValue(company);
@@ -55,8 +54,8 @@ export class ProfileFormComponent implements OnInit {
     }
 
     if (this.mode === 'create') {
-      this.accountService
-        .createAccount({
+      this.currentAccountService
+        .create({
           email: this.formGroup.get('email').value,
           name: this.formGroup.get('name').value,
           company: this.formGroup.get('company').value || undefined,
@@ -73,13 +72,13 @@ export class ProfileFormComponent implements OnInit {
         throw new Error('ID is not set');
       }
 
-      this.accountService
-        .updateAccount(id, {
+      this.currentAccountService
+        .update({
           name: this.formGroup.get('name').dirty ? this.formGroup.get('name').value : undefined,
           company: this.formGroup.get('company').dirty ? this.formGroup.get('company').value : undefined,
         })
         .subscribe((account) => {
-          const { name, email, company } = account.detail;
+          const { name, email, company } = account;
           this.formGroup.get('name').setValue(name);
           this.formGroup.get('email').setValue(email);
           this.formGroup.get('company').setValue(company);
