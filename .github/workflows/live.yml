@@ -12,6 +12,9 @@ env:
   BUCKET_NAME: ${{ secrets.LIVE_AWS_BUCKET_NAME }}
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.LIVE_AWS_CLOUDFRONT_DISTRIBUTION_ID }}
   NODE_ENV: live
+
+concurrency: live
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
