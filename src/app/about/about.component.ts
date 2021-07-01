@@ -8,8 +8,7 @@ import { environment } from '@env/environment';
   styleUrls: ['./about.component.scss'],
 })
 export class AboutComponent implements OnInit {
-  version: string | null = environment.version;
-  appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
+  appName: string = environment.APPLICATION_FRIENDLY_NAME;
 
   constructor() {}
 

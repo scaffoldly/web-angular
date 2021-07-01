@@ -97,7 +97,13 @@ export class AuthenticationService {
       return this.setTokenResponse();
     }
 
-    return this.jwtService.refresh(this.token).pipe(mergeMap((tokenResponse) => this.setTokenResponse(tokenResponse)));
+    this.jwtService.configuration.withCredentials = true;
+    return this.jwtService.refresh(this.token).pipe(
+      mergeMap((tokenResponse) => {
+        this.jwtService.configuration.withCredentials = true;
+        return this.setTokenResponse(tokenResponse);
+      })
+    );
   }
 
   logout(): Observable<boolean> {

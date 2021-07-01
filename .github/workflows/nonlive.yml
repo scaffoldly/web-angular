@@ -39,6 +39,8 @@ jobs:
           action: prerelease
           version-file: package.json
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: aws s3 sync . "s3://$BUCKET_NAME"
+      - run: |
+          aws s3 sync . "s3://$BUCKET_NAME" --exclude index.html
+          aws s3 cp index.html "s3://$BUCKET_NAME/index.html" --metadata-directive REPLACE --cache-control no-cache,no-store
         working-directory: dist
       - run: aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
