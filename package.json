@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "scripts": {
     "ng": "ng",
     "build": "yarn prepare && ng build --prod",
@@ -17,7 +17,7 @@
     "prettier:check": "prettier --list-different \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
     "postinstall": "yarn prettier -s",
     "generate": "ng generate",
-    "dotenv": "dotenv -e .scaffoldly/.env -c $NODE_ENV -- ngx-scripts env npm_package_version service_urls env_vars --parse-json",
+    "dotenv": "dotenv-out -f typescript -e .scaffoldly/.env -e .env -c $NODE_ENV -o src/environments",
     "openapi": "yarn openapi-generator -g angular -i .scaffoldly/$NODE_ENV -o src/app/@openapi -r +all"
   },
   "dependencies": {
@@ -54,14 +54,13 @@
     "@angularclass/hmr": "^3.0.0",
     "@biesbjerg/ngx-translate-extract": "^7.0.3",
     "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
-    "@ngx-rocket/scripts": "^5.1.0",
     "@scaffoldly/openapi-generator": "^1.0.13",
     "@types/jasmine": "^3.5.14",
     "@types/jasminewd2": "^2.0.8",
     "@types/jest": "^26.0.12",
     "@types/node": "^12.12.62",
     "codelyzer": "^6.0.1",
-    "dotenv-cli": "^4.0.0",
+    "dotenv-out": "^1.0.3",
     "hads": "^2.1.0",
     "htmlhint": "^0.14.1",
     "https-proxy-agent": "^5.0.0",
