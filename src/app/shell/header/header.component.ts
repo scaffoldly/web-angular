@@ -11,7 +11,7 @@ import { environment } from '@env/environment';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  appName: string = environment.envVars['APPLICATION_FRIENDLY_NAME'];
+  appName: string = environment.APPLICATION_FRIENDLY_NAME;
   account: AccountResponse;
   email: string;
   name: string;
