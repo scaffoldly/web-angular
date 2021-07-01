@@ -42,27 +42,31 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     const errorResponse = response as HttpErrorResponse;
     const { status } = errorResponse;
 
-    if (status !== 403) {
-      return this.toastThrowError(response, new CoreError('Request error', response));
-    }
-
-    if (status === 403 && request.headers.has(refreshHeader)) {
+    if (
+      status === 403 &&
+      request.url ===
+        (this.authenticationService.token &&
+          this.authenticationService.payload &&
+          this.authenticationService.payload.refreshUrl)
+    ) {
       return this.authenticationService.logout().pipe(() => {
         this.router.navigate(['/login'], { replaceUrl: true });
         return this.toastThrowError(response, new CoreError('Token refresh error', response));
       });
+    } else if (status === 401) {
+      return this.authenticationService.refresh().pipe(
+        mergeMap((loginResponse) => {
+          return this.intercept(
+            request.clone({
+              headers: request.headers.set('Authorization', `Bearer ${loginResponse.token}`),
+            }),
+            next
+          );
+        })
+      );
     }
 
-    return this.authenticationService.refresh().pipe(
-      mergeMap((loginResponse) => {
-        return this.intercept(
-          request.clone({
-            headers: request.headers.set('Authorization', `Bearer ${loginResponse.token}`),
-          }),
-          next
-        );
-      })
-    );
+    return this.toastThrowError(response, new CoreError('Request error', response));
   }
 
   private toastThrowError(response: HttpEvent<any>, error: CoreError): Observable<HttpEvent<any>> {
